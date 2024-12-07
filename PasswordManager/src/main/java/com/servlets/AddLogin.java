@@ -15,11 +15,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/addLogin")
-public class AddLogin extends HttpServlet{
+public class AddLogin extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
+		HttpSession session = req.getSession();
+		if (session.getAttribute("user") == null) {
+			resp.sendRedirect("index.jsp");
+		}
 		String name = req.getParameter("name");
 		String username = req.getParameter("username");
 		String email1 = req.getParameter("email1");
@@ -27,27 +30,25 @@ public class AddLogin extends HttpServlet{
 		String password = req.getParameter("password");
 		String website = req.getParameter("website");
 		String note = req.getParameter("note");
-		
-		HttpSession session = req.getSession();
-		
+
 		User user = (User) session.getAttribute("user");
-		
+
 		LoginDetail loginDetail = new LoginDetail(user, name, username, email1, email2, password, website, note);
-		
+
 		username = name = email1 = email2 = password = website = note = "";
-		
+
 		LoginDao logindao = new LoginDao(HibernateUtils.getSessionFactory());
-		
+
 		boolean saved = logindao.addLogin(loginDetail);
 		session.setAttribute("user", user);
-		if(saved) {
-				session.setAttribute("successMsg", "Login Detail Added.");
-				resp.sendRedirect("user_index.jsp");
-		}else{
-				session.setAttribute("failMsg", "Some Error Occured.");
-				resp.sendRedirect("user_index.jsp");
+		if (saved) {
+			session.setAttribute("successMsg", "Login Detail Added.");
+			resp.sendRedirect("user_index.jsp");
+		} else {
+			session.setAttribute("failMsg", "Some Error Occured.");
+			resp.sendRedirect("user_index.jsp");
 		}
-		
+
 	}
-	
+
 }

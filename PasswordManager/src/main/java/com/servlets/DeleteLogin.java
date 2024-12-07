@@ -19,8 +19,12 @@ public class DeleteLogin extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		int id = Integer.parseInt(req.getParameter("id"));
 		HttpSession session = req.getSession();
+		if (session.getAttribute("user") == null) {
+			resp.sendRedirect("index.jsp");
+		}
+		int id = Integer.parseInt(req.getParameter("id"));
+
 		LoginDao loginDao = new LoginDao(HibernateUtils.getSessionFactory());
 		LoginDetail login = loginDao.getLoginDetailById(id);
 		boolean deleted = loginDao.deleteLogin(login);

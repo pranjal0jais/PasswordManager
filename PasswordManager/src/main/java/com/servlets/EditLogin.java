@@ -21,7 +21,10 @@ public class EditLogin extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+		HttpSession session = req.getSession();
+		if (session.getAttribute("user") == null) {
+			resp.sendRedirect("index.jsp");
+		}
 		int id = Integer.parseInt(req.getParameter("id"));
 		String name = req.getParameter("name");
 		String username = req.getParameter("username");
@@ -30,7 +33,6 @@ public class EditLogin extends HttpServlet {
 		String password = req.getParameter("password");
 		String website = req.getParameter("website");
 		String note = req.getParameter("note");
-		HttpSession session = req.getSession();
 
 		LoginDao loginDao = new LoginDao(HibernateUtils.getSessionFactory());
 		LoginDetail login = loginDao.getLoginDetailById(id);
